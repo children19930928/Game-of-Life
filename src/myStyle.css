@@ -1,0 +1,33 @@
+
+#myCanvas{
+	float: left;
+}
+
+.panel{
+}
+
+#optionBorder{
+	margin-top: 25px;
+	margin-left: 25px;
+	margin-right: 25px;
+	width:280px;
+	height:600px;
+	/*background-color: rgba(0, 0, 255, 0.5);*/
+	border-radius:30px;
+	float: left;
+}
+
+.frame{
+	font-family: broadWay;
+	font-size: 30px;
+}
+
+.text{
+	font-family: "黑体";
+	font-size: 25px;
+}
+
+.col{
+	float: inherit;
+	margin-bottom: 30px !important;
+}

@@ -1,0 +1,209 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+	<meta charset="utf-8">
+	<title>Game of Life</title>
+
+
+	<!-- 【bootStrap大法】 -->
+	<!-- 新 Bootstrap 核心 CSS 文件 -->
+	<!-- <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap.min.css"> -->
+	<!-- 可选的Bootstrap主题文件（一般不用引入） -->
+	<!-- <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"> -->
+	<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+	<!--<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script> -->
+	<!--最新的 Bootstrap 核心 JavaScript 文件 -->
+	<!--<script src="http://cdn.bootcss.com/bootstrap/3.2.0/js/bootstrap.min.js"></script> -->
+
+	
+	<style type="text/css">
+	</style>
+
+	<link rel="stylesheet" type="text/css" href="myStyle.css" />
+
+	<script src="jquery.min.js"></script>
+	<script src="bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="bootstrap-theme.min.css" />
+
+</head>
+
+<body>
+	<!-- 【游戏方格主体】 -->
+	<canvas id="myCanvas" width="650px" height="650px">
+		您的浏览器不支持canvas！
+	</canvas>
+
+	<!-- 【右侧按钮与资料】 -->
+	<div id="optionBorder">
+
+		<!-- 【游戏模式】 -->
+		<div class="penel">
+			<div class="btn-group">
+				<button type="button" class="btn btn-info btn-lg" id="easyBtn">易</button>
+				<button type="button" class="btn btn-default btn-lg" id="middleBtn">中</button>
+				<button type="button" class="btn btn-default btn-lg" id="hardBtn">难</button>
+			</div>
+			<button type="button" class="btn btn-default btn-lg col-md-offset-1" data-toggle="modal" data-target="#myModal" id="customBtn">自定义</button>
+		</div>
+
+		<!-- 自定义模态框 -->
+		<div class="modal fade col-sm-6" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+						<h4 class="modal-title" id="myModalLabel">自定义.观赏模式</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group col">
+							<span class="text">边界规模（边长）</span>
+							<input id="customScaleTxt" type="text" class="form-control col-sm-2" value="10">
+						</div>
+						<div class="form-group col">
+							<span class="text">更新周期（单位s）</span>
+							<input id="customPeriodTxt" type="text" class="form-control col-sm-2" value="1">
+						</div>
+						<div class="form-group col">
+							<span class="text">初始活率（0~1）</span>
+							<input id="customDensityTxt" type="text" class="form-control col-sm-2" value="0.5">
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button id="customSaveBtn" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="panel"></div>
+
+		<!-- 【游戏进程】 -->
+		<div class="panel">
+			<button id="startBtn" type="button" class="btn btn-primary btn-lg">开始</button>
+			<button id="pauseBtn" type="button" class="btn btn-warning btn-lg col-md-offset-1" disabled="disabled">暂停</button>
+			<button id="stopBtn" type="button" class="btn btn-danger btn-lg col-md-offset-1" disabled="true">停止</button>
+
+		</div>
+
+		<!-- 【游戏进度】 -->
+		<div class="panel">
+			<span class="text">存活数</span>
+			<div class="progress panel">
+				<div id="densityBar" class="progress-bar progress-bar-success progress-bar-striped active"  role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 0">
+					0
+				</div>
+			</div>
+		</div>
+		
+		<div class="panel">
+			<span class="text">本轮正确率</span>
+			<div class="progress panel">
+				<div id="correctBar" class="progress-bar progress-bar-info progress-bar-striped active"  role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+					0
+				</div>
+			</div>
+		</div>
+
+		<div class="panel">
+			<span class="text">总体正确率</span>
+			<div class="progress panel">
+				<div id="totalCorrectBar" class="progress-bar progress-bar-primary progress-bar-striped active"  role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+					0
+				</div>
+			</div>
+		</div>
+
+		<!-- 【游戏数据】 -->
+		<div class="panel">
+			<span class="text">轮数</span>
+			<span id="roundFrame" class="frame col-md-offset-1">0</span>
+		</div>
+		<div class="panel">
+			<span class="text">规模</span>
+			<span id="scaleFrame" class="frame col-md-offset-1">7*7</span>
+		</div>
+		<div class="panel">
+			<span class="text">周期</span>
+			<span id="periodFrame" class="frame col-md-offset-1">20 s</span>
+		</div>
+
+	</div>
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</body>
+
+</head>
+
+<!-- 【全局变量】  -->
+<script type="text/javascript" language="javascript">
+	// 循环
+	setinterval = -1;
+	// 游戏模式(易1，中2，难3，自定义4)
+	var gameMode = 1;
+	// 游戏进行
+	var gameOn = 0;
+	
+	//**以下变量在getset里面会重新初始化**
+	// 初始存活率0~1
+	var initialDensity = 0.5;
+	// 先前存活个数
+	var priorSurvivalNum = -1;
+	// 当前存活个数
+	var curSurvivalNum = 0;
+	// 相同存活次数（两次则游戏结束）
+	var sameSurvivalNum = 0;
+	// 轮数
+	var round = 0;
+	// 规模1~100
+	var scale = 7;
+	// 周期，单位s
+	var period = 10;
+	// 生成地图
+	var cellMap = []; 
+	// 暂存地图
+	var cellMapTemp = [];
+	// 猜测地图
+	var cellMapGuess = [];
+	// 总共存活个数
+	var totalSurvivalNum = 0;
+	// 总共错误个数
+	var totalErrorNum = 0;
+	// 上次存活个数
+	var survivalNum = -1;
+	// 上次错误个数
+	var errorNum = 0;
+	// 单位格子的px值
+	var unit = 600.0 / scale; 
+</script>
+
+<!-- 响应函数js -->
+<script src="eventListener.js"></script>
+
+<!-- 游戏逻辑js -->
+<script src="myScript.js"></script>
